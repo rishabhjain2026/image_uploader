@@ -11,7 +11,6 @@
   <button onclick="uploadImage()">Upload</button>
 
   <p id="status"></p>
-
   <img id="preview" width="250" style="margin-top: 20px;" />
 
   <script>
@@ -26,20 +25,30 @@
       }
 
       const formData = new FormData();
-      formData.append("image", fileInput.files[0]); // MUST match backend name
+      formData.append("image", fileInput.files[0]); // key must match backend
 
       status.innerText = "Uploading...";
 
-      const res = await fetch("http://localhost:5000/api/upload", {
-        method: "POST",
-        body: formData,
-      });
+      try {
+        const res = await fetch("http://localhost:5000/api/upload", {
+          method: "POST",
+          body: formData
+        });
 
-      const data = await res.json();
-      console.log(data);
+        const data = await res.json();
+        console.log("Backend response:", data); // check in console
 
-      status.innerText = "Upload Successful!";
-      preview.src = data.url;  // Show image from Cloudinary
+        if (data.url) {
+          status.innerText = "Upload Successful!";
+          preview.src = data.url; // ✅ this shows image preview
+        } else {
+          status.innerText = "Upload successful but no URL returned!";
+        }
+
+      } catch (err) {
+        console.error(err);
+        status.innerText = "Upload Failed!";
+      }
     }
   </script>
 
