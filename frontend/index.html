@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Image Upload</title>
+</head>
+<body>
+
+  <h2>Upload Image to Cloudinary</h2>
+
+  <input type="file" id="file" />
+  <button onclick="uploadImage()">Upload</button>
+
+  <p id="status"></p>
+
+  <img id="preview" width="250" style="margin-top: 20px;" />
+
+  <script>
+    async function uploadImage() {
+      const fileInput = document.getElementById("file");
+      const status = document.getElementById("status");
+      const preview = document.getElementById("preview");
+
+      if (!fileInput.files.length) {
+        alert("Please select an image!");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("image", fileInput.files[0]); // MUST match backend name
+
+      status.innerText = "Uploading...";
+
+      const res = await fetch("http://localhost:5000/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      console.log(data);
+
+      status.innerText = "Upload Successful!";
+      preview.src = data.url;  // Show image from Cloudinary
+    }
+  </script>
+
+</body>
+</html>
